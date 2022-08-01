@@ -70,5 +70,10 @@
       <artifactId>google-cloud-core</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>20220320</version>
+    </dependency>
   </dependencies>
 </project>
