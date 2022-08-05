@@ -1,0 +1,29 @@
+name: Deployment
+
+# on commit push, run job
+on: [push]
+
+jobs:
+  run:
+    # worker runs on latest ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+    # checkout to our repository so we have access to the source code
+    - uses: actions/checkout@v2
+    
+    # the actual deployment to google
+    - name: Cloud Functions Deploy
+      uses: google-github-actions/deploy-cloud-functions@v0.1.2
+      with:
+        credentials_json: '${{ secrets.gcp_credentials }}'
+        name: reconcile-fn
+        description: Reconcile Java cloud function # nullable
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        source_dir: src
+        # name of our function in our main.py file, defaults to the resource name suffix 
+        entry_point: ReconcileFunction
+        # runtime to use for the function
+        runtime: java11
+        # the function execution timeout
+        timeout: 60
