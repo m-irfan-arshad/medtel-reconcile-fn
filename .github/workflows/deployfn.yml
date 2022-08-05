@@ -23,7 +23,8 @@ jobs:
         event_trigger_type: providers/cloud.pubsub/eventTypes/topic.publish
         event_trigger_resource: projects/${{ secrets.gcp_project }}/topics/fhirtopic
         region: europe-west1
-        source_dir: /src
+        source_dir: .
+        #REPO_NAME: hopper-frontend
         # name of our function in our main.py file, defaults to the resource name suffix 
         entry_point: ReconcileFunction
         # runtime to use for the function
