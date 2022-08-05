@@ -26,10 +26,3 @@ jobs:
         entry_point: reconcile-fn
         # runtime to use for the function
         runtime: java11
-        # the function execution timeout
-        timeout: 60
-        # the maximum number of instances for the function.
-        max_instances: 1
-        # optional configs, see google-cloud-actions/deploy-cloud-functions for full reference
-        # list of key-value pairs to set as environment variables in the form KEY1=VALUE1,KEY2=VALUE2.
-#       env_vars: # optional
