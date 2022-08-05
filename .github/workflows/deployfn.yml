@@ -16,14 +16,20 @@ jobs:
     - name: Cloud Functions Deploy
       uses: google-github-actions/deploy-cloud-functions@v0.1.2
       with:
-        credentials_json: '${{ secrets.gcp_credentials }}'
+        credentials: ${{ secrets.GCP_SA_KEY }}
         name: reconcile-fn
-        description: Reconcile Java cloud function # nullable
+        description: Test reconcile-fn cloud function
         project_id: ${{ secrets.GCP_PROJECT_ID }}
+        region: europe-west1
         source_dir: src
         # name of our function in our main.py file, defaults to the resource name suffix 
-        entry_point: ReconcileFunction
+        entry_point: reconcile-fn
         # runtime to use for the function
         runtime: java11
         # the function execution timeout
         timeout: 60
+        # the maximum number of instances for the function.
+        max_instances: 1
+        # optional configs, see google-cloud-actions/deploy-cloud-functions for full reference
+        # list of key-value pairs to set as environment variables in the form KEY1=VALUE1,KEY2=VALUE2.
+#       env_vars: # optional
