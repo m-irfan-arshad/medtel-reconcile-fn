@@ -40,6 +40,7 @@ public class Resource {
         return match.has("entry");
     }
 
+    //by default getMatchId() fetches first resource id in entry JSONArray
     public String getMatchId() {
         if (hasMatch()) {
             return match.getJSONArray("entry").getJSONObject(0).getJSONObject("resource").getString("id");

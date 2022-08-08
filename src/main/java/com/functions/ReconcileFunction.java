@@ -13,7 +13,7 @@ import org.json.JSONObject;
 public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
 
   private static final String FINAL_FHIR_STORE = "finalFhirStore";
-  private static final String ENDPOINT_TEMPLATE = "https://healthcare.googleapis.com/v1/projects/medtel-349114/locations/us-central1/datasets/datastore/fhirStores/%1$s/fhir/%2$s/%3$s";
+  private static final String ENDPOINT_TEMPLATE = "https://healthcare.googleapis.com/v1/projects/medtel-349114/locations/us-east4/datasets/datastore/fhirStores/%1$s/fhir/%2$s/%3$s";
 
   @Override
   public void accept(PubSubMessage message, Context context) {

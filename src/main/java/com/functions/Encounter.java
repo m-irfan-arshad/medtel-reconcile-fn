@@ -13,7 +13,7 @@ public class Encounter extends Resource {
     public JSONObject Search(HTTPHandler http, String fhirStore) throws IOException {
         match = http.GET(
             String.format( 
-                "https://healthcare.googleapis.com/v1/projects/medtel-349114/locations/us-central1/datasets/datastore/fhirStores/%1$s/fhir/Encounter"
+                "https://healthcare.googleapis.com/v1/projects/medtel-349114/locations/us-east4/datasets/datastore/fhirStores/%1$s/fhir/Encounter"
                 + "?subject=%2$s"
                 + "&identifier=%3$s",
                 fhirStore, getReference(), getVN()
@@ -26,7 +26,7 @@ public class Encounter extends Resource {
          return resource.getJSONObject("subject").getString("reference");
     }
 
-    private String getVN() {
+    public String getVN() {
         String VN = null;
         JSONArray identifier = resource.getJSONArray("identifier");
         for (int i = 0; i < identifier.length(); i++) {
@@ -44,6 +44,6 @@ public class Encounter extends Resource {
             }
         }
         return VN;
-    }
+    }    
 
 }
