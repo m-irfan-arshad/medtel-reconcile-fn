@@ -10,13 +10,16 @@ public class Encounter extends Resource {
         super(json);
     }
 
-    public JSONObject Search(HTTPHandler http, String fhirStore) throws IOException {
+    public JSONObject Search(HTTPHandler http) throws IOException {
+        String vn = getVN();
+        System.out.println("Searching for Encounter with matching Visit Number: " + vn + "...");
         match = http.GET(
             String.format( 
-                "https://healthcare.googleapis.com/v1/projects/medtel-349114/locations/us-east4/datasets/datastore/fhirStores/%1$s/fhir/Encounter"
-                + "?subject=%2$s"
-                + "&identifier=%3$s",
-                fhirStore, getReference(), getVN()
+                ReconcileFunction.FINAL_URL
+                + "Encounter"
+                + "?subject=%1$s"
+                + "&identifier=%2$s",
+                getReference(), vn
             )
         );
         return match;

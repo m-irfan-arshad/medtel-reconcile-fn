@@ -10,16 +10,18 @@ public class Patient extends Resource {
         super(json);
     }
 
-    public JSONObject Search(HTTPHandler http, String fhirStore) throws IOException {
+    public JSONObject Search(HTTPHandler http) throws IOException {
+        System.out.println("Searching for Patient with matching name/DOB/SSN/MRN...");
         match = http.GET(
             String.format( 
-                "https://healthcare.googleapis.com/v1/projects/medtel-349114/locations/us-east4/datasets/datastore/fhirStores/%1$s/fhir/Patient"
-                + "?name=%2$s"
-                + "&family=%3$s"
-                + "&birthdate=%4$s"
-                + "&identifier=http://hl7.org/fhir/sid/us-ssn|%5$s"
-                + "&identifier=%6$s",
-                fhirStore, getFirstName(), getLastName(), getDOB(), getSSN(), getMRN()
+                ReconcileFunction.FINAL_URL 
+                + "Patient"
+                + "?name=%1$s"
+                + "&family=%1$s"
+                + "&birthdate=%3$s"
+                + "&identifier=http://hl7.org/fhir/sid/us-ssn|%4$s"
+                + "&identifier=%5$s",
+                getFirstName(), getLastName(), getDOB(), getSSN(), getMRN()
             )
         );
         return match;

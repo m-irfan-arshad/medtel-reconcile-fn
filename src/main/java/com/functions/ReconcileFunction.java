@@ -12,8 +12,24 @@ import org.json.JSONObject;
 
 public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
 
+  // Config
+  //-----------------------------------------------------------------
+  private static final String PROJECT = "medtel-349114";
+  private static final String LOCATION = "us-east4";
+  private static final String DATASET = "datastore";
+  private static final String STAGING_FHIR_STORE = "fhirstore";
   private static final String FINAL_FHIR_STORE = "finalFhirStore";
-  private static final String ENDPOINT_TEMPLATE = "https://healthcare.googleapis.com/v1/projects/medtel-349114/locations/us-east4/datasets/datastore/fhirStores/%1$s/fhir/%2$s/%3$s";
+  //-----------------------------------------------------------------
+
+  public static final String STAGING_URL = String.format(
+    "https://healthcare.googleapis.com/v1/projects/%1$s/locations/%2$s/datasets/%3$s/fhirStores/%4$s/fhir/",
+    PROJECT, LOCATION, DATASET, STAGING_FHIR_STORE
+  );
+
+  public static final String FINAL_URL = String.format(
+    "https://healthcare.googleapis.com/v1/projects/%1$s/locations/%2$s/datasets/%3$s/fhirStores/%4$s/fhir/",
+    PROJECT, LOCATION, DATASET, FINAL_FHIR_STORE
+  );
 
   @Override
   public void accept(PubSubMessage message, Context context) {
@@ -35,7 +51,7 @@ public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
     
     try {
       //get fhir resource from source fhir store
-      JSONObject json = http.GET(String.format(ENDPOINT_TEMPLATE, sourceFhirStore, resourceType, resourceId));
+      JSONObject json = http.GET(STAGING_URL + resourceType + "/" + resourceId);
 
       //handle matchable resource types
       if (resourceType.equals("Patient")) {
@@ -51,19 +67,19 @@ public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
         resource = new Resource(json);
       }
 
-      //search for matches in destination fhir store
+      //search for matches in final fhir store
       System.out.println("Searching for matches...");
-      resource.Search(http, FINAL_FHIR_STORE);
+      resource.Search(http);
 
       //handle match
       if (resource.hasMatch()) {
         String matchId = resource.getMatchId();
         resource.SetId(matchId);
         System.out.println("Match found: updating FHIR resource " + resourceType + "/" + matchId + "...");   
-        http.PUT(String.format(ENDPOINT_TEMPLATE, FINAL_FHIR_STORE, resourceType, matchId), resource.toJSON());
+        http.PUT(FINAL_URL + resourceType + "/" + matchId, resource.toJSON());
       } else {
         System.out.println("No match found: moving FHIR resource " + resourceType + "/" + resourceId + "...");   
-        http.PUT(String.format(ENDPOINT_TEMPLATE, FINAL_FHIR_STORE, resourceType, resourceId), resource.toJSON());
+        http.PUT(FINAL_URL + resourceType + "/" + resourceId, resource.toJSON());;
       }
 
     } catch (IOException ex){

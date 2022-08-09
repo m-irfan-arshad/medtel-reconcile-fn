@@ -31,7 +31,7 @@ public class Resource {
     }
 
     //only used by resources that implement matching
-    public JSONObject Search(HTTPHandler http, String fhirStore) throws IOException {
+    public JSONObject Search(HTTPHandler http) throws IOException {
         match = new JSONObject();
         return null;
     }
