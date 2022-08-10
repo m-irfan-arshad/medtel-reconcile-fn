@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
 
-  //COMMENT TO VERIFY TEST PUSH
   // Config
   //-----------------------------------------------------------------
   private static final String PROJECT = "medtel-349114";
