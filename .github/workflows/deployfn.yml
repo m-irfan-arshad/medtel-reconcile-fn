@@ -23,7 +23,7 @@ jobs:
         event_trigger_type: providers/cloud.pubsub/eventTypes/topic.publish
         event_trigger_resource: projects/${{ secrets.gcp_project }}/topics/fhirtopic
         region: us-east4
-        source_dir: './'
+        source_dir: reconcile-fn
         #REPO_NAME: reconcile-fn
         # name of our function in our main.py file, defaults to the resource name suffix 
         entry_point: com.functions.ReconcileFunction
