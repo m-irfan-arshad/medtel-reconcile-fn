@@ -1,7 +1,13 @@
 name: Deployment
 
 # on commit push, run job
-on: [push]
+##on: [push]
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ test-auto-deploy ]
+  pull_request:
+    branches: [ test-auto-deploy ]
 
 jobs:
   run:
