@@ -19,6 +19,10 @@ public class HTTPHandler {
         verbose = false;
     }
 
+    public HTTPHandler(boolean verbose) {
+        this.verbose = verbose;
+    }
+
     public boolean isVerbose() {
         return this.verbose;
     }
@@ -75,6 +79,65 @@ public class HTTPHandler {
             if (verbose) {
                 System.out.println("PUT request: " + http.getResponseCode() + " " + http.getResponseMessage());
                 System.out.print("PUT request: " + response);
+            }
+            scanner.close();
+            http.disconnect();
+            return new JSONObject(response);
+        }
+    }
+
+    public JSONObject POST(String urlString, JSONObject data) throws IOException {
+        return POST(urlString, data.toString());
+    }
+
+    public JSONObject POST(String urlString, String data) throws IOException {
+        if (verbose) {
+            System.out.println("POST request: sending to " + urlString);
+        }
+        URL url = new URL(urlString);
+        HttpURLConnection http = (HttpURLConnection)url.openConnection();
+        http.setRequestMethod("POST");
+        http.setDoOutput(true);
+        http.setRequestProperty("Authorization", "Bearer " + getAccessToken());
+        http.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+
+        byte[] out = data.getBytes(StandardCharsets.UTF_8);
+        OutputStream stream = http.getOutputStream();
+        stream.write(out);
+
+        InputStream responseStream = http.getResponseCode() / 100 == 2
+            ? http.getInputStream()
+            : http.getErrorStream();
+        try (Scanner scanner = new Scanner(responseStream).useDelimiter("\\A")) {
+            String response = scanner.hasNext() ? scanner.next() : "";
+            if (verbose) {
+                System.out.println("POST request: " + http.getResponseCode() + " " + http.getResponseMessage());
+                System.out.print("POST request: " + response);
+            }
+            scanner.close();
+            http.disconnect();
+            return new JSONObject(response);
+        }
+    }
+
+    public JSONObject DELETE(String urlString) throws IOException {
+        if (verbose) {
+            System.out.println("DELETE request: sending to " + urlString);
+        }
+        URL url = new URL(urlString);
+        HttpURLConnection http = (HttpURLConnection)url.openConnection();
+        http.setRequestMethod("DELETE");
+        http.setRequestProperty("Authorization", "Bearer " + getAccessToken());
+        http.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+    
+        InputStream responseStream = http.getResponseCode() / 100 == 2
+            ? http.getInputStream()
+            : http.getErrorStream();
+        try (Scanner scanner = new Scanner(responseStream).useDelimiter("\\A")) {
+            String response = scanner.hasNext() ? scanner.next() : "";
+            if (verbose) {
+                System.out.println("DELETE request: " + http.getResponseCode() + " " + http.getResponseMessage());
+                System.out.print("DELETE request: " + response);
             }
             scanner.close();
             http.disconnect();

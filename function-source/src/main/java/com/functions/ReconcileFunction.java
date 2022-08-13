@@ -14,22 +14,20 @@ public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
 
   // Config
   //-----------------------------------------------------------------
-  private static final String PROJECT = "medtel-349114";
-  private static final String LOCATION = "us-east4";
-  private static final String DATASET = "datastore";
-  private static final String STAGING_FHIR_STORE = "fhirstore";
-  private static final String FINAL_FHIR_STORE = "finalFhirStore";
+  private String stagingProject = "medtel-349114";
+  private String stagingLocation = "us-east4";
+  private String stagingDataset = "datastore";
+  private String stagingFhirStore = "fhirstore";
+
+  private String finalProject = "medtel-349114";
+  private String finalLocation = "us-east4";
+  private String finalDataset = "datastore";
+  private String finalFhirStore = "finalFhirStore";
   //-----------------------------------------------------------------
 
-  public static final String STAGING_URL = String.format(
-    "https://healthcare.googleapis.com/v1/projects/%1$s/locations/%2$s/datasets/%3$s/fhirStores/%4$s/fhir/",
-    PROJECT, LOCATION, DATASET, STAGING_FHIR_STORE
-  );
-
-  public static final String FINAL_URL = String.format(
-    "https://healthcare.googleapis.com/v1/projects/%1$s/locations/%2$s/datasets/%3$s/fhirStores/%4$s/fhir/",
-    PROJECT, LOCATION, DATASET, FINAL_FHIR_STORE
-  );
+  private final String URL_FORMAT = "https://healthcare.googleapis.com/v1/projects/%1$s/locations/%2$s/datasets/%3$s/fhirStores/%4$s/fhir/";
+  public static String STAGING_URL;
+  public static String FINAL_URL;
 
   @Override
   public void accept(PubSubMessage message, Context context) {
@@ -38,13 +36,20 @@ public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
       ? new String(Base64.getDecoder().decode(message.data)) 
       : "null";
 
+    run(sourceFhirPath);
+  }
+
+  public void run(String sourceFhirPath) {
     //parse fhir path from PubSub
     String[] args = sourceFhirPath.split("/");
-    String sourceFhirStore = args[7];
     String resourceType = args[9];
     String resourceId = args[10];
 
-    System.out.println(String.format("Attempting to move FHIR resource %1$s/%2$s from %3$s to %4$s...", resourceType, resourceId, sourceFhirStore, FINAL_FHIR_STORE));
+    //generate URLs
+    STAGING_URL = String.format(URL_FORMAT, stagingProject, stagingLocation, stagingDataset, stagingFhirStore);
+    FINAL_URL = String.format(URL_FORMAT, finalProject, finalLocation, finalDataset, finalFhirStore);
+
+    System.out.println(String.format("Attempting to move FHIR resource %1$s/%2$s from %3$s to %4$s...", resourceType, resourceId, stagingFhirStore, finalFhirStore));
     
     HTTPHandler http = new HTTPHandler();
     Resource resource;
@@ -85,6 +90,20 @@ public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
     } catch (IOException ex){
       System.out.println("IOException: " + ex);
     }
+  }
+
+  public void setStagingConfig(String project, String location, String dataset, String fhirStore) {
+    stagingProject = project;
+    stagingLocation = location;
+    stagingDataset = dataset;
+    stagingFhirStore = fhirStore;
+  }
+
+  public void setFinalConfig(String project, String location, String dataset, String fhirStore) {
+    finalProject = project;
+    finalLocation = location;
+    finalDataset = dataset;
+    finalFhirStore = fhirStore;
   }
 
   public static class PubSubMessage {

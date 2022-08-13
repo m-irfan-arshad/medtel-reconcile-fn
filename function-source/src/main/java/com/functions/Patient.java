@@ -17,7 +17,7 @@ public class Patient extends Resource {
                 ReconcileFunction.FINAL_URL 
                 + "Patient"
                 + "?name=%1$s"
-                + "&family=%1$s"
+                + "&family=%2$s"
                 + "&birthdate=%3$s"
                 + "&identifier=http://hl7.org/fhir/sid/us-ssn|%4$s"
                 + "&identifier=%5$s",
