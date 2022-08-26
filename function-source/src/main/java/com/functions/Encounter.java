@@ -1,4 +1,6 @@
 package com.functions;
+import static com.functions.ReconcileFunction.FINAL_URL;
+import static com.functions.HTTPHandler.GET;
 
 import java.io.IOException;
 
@@ -10,22 +12,22 @@ public class Encounter extends Resource {
         super(json);
     }
 
-    public JSONObject Search(HTTPHandler http) throws IOException {
+    public JSONObject Search() throws IOException {
         String vn = getVN();
         System.out.println("Searching for Encounter with matching Visit Number: " + vn + "...");
-        match = http.GET(
+        match = GET( 
             String.format( 
-                ReconcileFunction.FINAL_URL
+                FINAL_URL
                 + "Encounter"
                 + "?subject=%1$s"
                 + "&identifier=%2$s",
-                getReference(), vn
+                getSubject(), vn
             )
         );
         return match;
     }
 
-    private String getReference() {
+    public String getSubject() {
          return resource.getJSONObject("subject").getString("reference");
     }
 

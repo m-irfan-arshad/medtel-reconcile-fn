@@ -1,4 +1,6 @@
 package com.functions;
+import static com.functions.ReconcileFunction.FINAL_URL;
+import static com.functions.HTTPHandler.GET;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -10,11 +12,11 @@ public class Patient extends Resource {
         super(json);
     }
 
-    public JSONObject Search(HTTPHandler http) throws IOException {
+    public JSONObject Search() throws IOException {
         System.out.println("Searching for Patient with matching name/DOB/SSN/MRN...");
-        match = http.GET(
+        match = GET(
             String.format( 
-                ReconcileFunction.FINAL_URL 
+                FINAL_URL 
                 + "Patient"
                 + "?name=%1$s"
                 + "&family=%2$s"
@@ -27,19 +29,19 @@ public class Patient extends Resource {
         return match;
     }
 
-    private String getFirstName() {
+    public String getFirstName() {
         return resource.getJSONArray("name").getJSONObject(0).getJSONArray("given").getString(0);
     }
 
-    private String getLastName() {
+    public String getLastName() {
         return resource.getJSONArray("name").getJSONObject(0).getString("family");
     }
 
-    private String getDOB() {
+    public String getDOB() {
         return resource.getString("birthDate");
     }
 
-    private String getMRN() {
+    public String getMRN() {
         String MRN = null;
         JSONArray identifier = resource.getJSONArray("identifier");
         for (int i = 0; i < identifier.length(); i++) {
@@ -55,7 +57,7 @@ public class Patient extends Resource {
         return MRN;
     }
 
-    private String getSSN() {
+    public String getSSN() {
         String SSN = null;
         JSONArray identifier = resource.getJSONArray("identifier");
         for (int i = 0; i < identifier.length(); i++) {

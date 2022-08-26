@@ -1,0 +1,18 @@
+{
+        "resourceType": "PractitionerRole",
+        "id": "f25f6cb4-cf6d-c1fc-529c-3a90317750bc",
+        "code": [
+          {
+            "coding": [
+              {
+                "code": "EP",
+                "display": "Entering Provider",
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0443"
+              }
+            ]
+          }
+        ],
+        "practitioner": {
+          "reference": "Practitioner/7a5fc2e9-c8dd-de63-d0c4-6c66e9c9bf01"
+        }
+      }

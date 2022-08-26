@@ -1,19 +1,22 @@
 package com.functions;
+import static com.functions.ReconcileFunction.FINAL_URL;
+import static com.functions.HTTPHandler.*;
 
 import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 
 public class Appointment extends Resource {
     public Appointment(JSONObject json) {
         super(json);
     }
 
-    public JSONObject Search(HTTPHandler http) throws IOException {
+    public JSONObject Search() throws IOException {
         //generate json with all existing appointments for new appointment's patient
-        match = http.GET(
+        match = GET(
             String.format( 
-                ReconcileFunction.FINAL_URL
+                FINAL_URL
                 + "Appointment"
                 + "?patient=%1$s",
                 getPatient()
@@ -21,7 +24,7 @@ public class Appointment extends Resource {
         );
 
         //get visit number of this appointment
-        String vn = getVN(http);
+        String vn = getVN();
 
         //check if this visit number matches any existing appointments
         if (hasMatch() && !vn.equals("")) {
@@ -30,7 +33,7 @@ public class Appointment extends Resource {
                 JSONObject entry = match.getJSONArray("entry").getJSONObject(i);
                 Appointment appointment = new Appointment(entry.getJSONObject("resource"));
 
-                if (vn.equals(appointment.getVN(http))) {
+                if (vn.equals(appointment.getVN())) {
                     //if match exists, remove non-matching appointments from json
                     match.getJSONArray("entry").clear();
                     match.getJSONArray("entry").put(entry);
@@ -43,36 +46,37 @@ public class Appointment extends Resource {
 
         //if no visit number match exists, match by fields
         System.out.println("Searching for Appointment with matching patient/practitioner/location/date...");
-        match = http.GET(
+        match = GET(
             String.format( 
-                ReconcileFunction.FINAL_URL
+                FINAL_URL
                 + "Appointment"
                 + "?patient=%1$s"
                 + "&practitioner=%2$s"
                 + "&location=%3$s"
                 + "&date=%4$s",
-                getPatient(), getPractioner(), getLocation(), getDate()
+                getPatient(), getPractitioner(), getLocation(), getDate()
             )
         );
 
         return match;
     }
 
-    private String getVN(HTTPHandler http) throws IOException {
+    public String getVN() throws IOException {
         if (resource.has("basedOn") && resource.getJSONArray("basedOn").getJSONObject(0).has("reference")) {
-            String serviceRequestReference = resource.getJSONArray("basedOn")
-                                                .getJSONObject(0)
-                                                .getString("reference");
-            JSONObject serviceRequest = http.GET(ReconcileFunction.FINAL_URL + serviceRequestReference);
-            String encounterReference = serviceRequest.getJSONObject("encounter")
-                                                .getString("reference");
-            Encounter encounter = new Encounter(http.GET(ReconcileFunction.FINAL_URL + encounterReference));
+            ServiceRequest serviceRequest = new ServiceRequest(
+                GET(FINAL_URL + getServiceRequestReference()));
+            Encounter encounter = new Encounter(
+                GET(FINAL_URL + serviceRequest.getEncounterReference()));
             return encounter.getVN();
         }
         return "";
     }
 
-    private String getPatient() {
+    public String getServiceRequestReference() {
+        return resource.getJSONArray("basedOn").getJSONObject(0).getString("reference");
+    }
+
+    public String getPatient() {
         String patient = null;
         JSONArray participant = resource.getJSONArray("participant");
         for (int i = 0; i < participant.length(); i++) {
@@ -87,7 +91,7 @@ public class Appointment extends Resource {
         return patient;
     }
 
-    private Object getPractioner() {
+    public String getPractitioner() {
         String practitioner = null;
         JSONArray participant = resource.getJSONArray("participant");
         for (int i = 0; i < participant.length(); i++) {
@@ -102,7 +106,7 @@ public class Appointment extends Resource {
         return practitioner;
     }
 
-    private Object getLocation() {
+    public String getLocation() {
         String location = null;
         JSONArray participant = resource.getJSONArray("participant");
         for (int i = 0; i < participant.length(); i++) {
@@ -117,7 +121,7 @@ public class Appointment extends Resource {
         return location;
     }
 
-    private Object getDate() {
+    public String getDate() {
        return resource.getString("start");
     }
 }

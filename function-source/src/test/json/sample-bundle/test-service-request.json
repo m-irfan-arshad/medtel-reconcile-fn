@@ -1,0 +1,50 @@
+{
+    "resourceType": "ServiceRequest",
+    "id": "1e03ea4b-0cb0-dc43-a384-5bf274eb86ba",
+    "status": "draft",
+    "intent": "filler-order",
+    "orderDetail": [
+        {
+            "coding": [
+                {
+                    "code": "0"
+                }
+            ]
+        },
+        {
+            "coding": [
+                {
+                    "code": "N/A",
+                    "display": "N/A"
+                }
+            ]
+        }
+    ],
+    "occurrencePeriod": {
+        "start": "2022-04-29T11:10:00Z"
+    },
+    "code": {
+        "coding": [
+            {
+                "code": "1180936",
+                "display": "CATHETERIZATION LEFT HEART WITH POSSIBLE PERCUTANEOUS CORONARY INTERVENTION"
+            }
+        ]
+    },
+    "subject": {
+        "reference": "Patient/27cbc4c3-95e6-194a-ab62-2d07dbfbd458"
+    },
+    "encounter": {
+        "reference": "Encounter/d9435d70-7aff-5314-e46f-66e9e69ef8c4"
+    },
+    "locationReference": [
+        {
+            "reference": "Location/ce692c7c-84ea-4b8f-d3ff-3ec9f0e51bd8"
+        }
+    ],
+    "performer": [
+        {
+            "reference": "Practitioner/bf0b9fec-b7f0-e253-7671-5fe1ae23dc02"
+        }
+    ]
+}
