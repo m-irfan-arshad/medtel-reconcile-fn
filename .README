@@ -1,0 +1,63 @@
+----------------------------------------------------------------------
+README
+----------------------------------------------------------------------
+
+The Reconcile Function is the GCP Cloud Function responsible for moving FHIR resources from the staging FHIR store to the final FHIR store, while implementing resource matching rules. 
+
+
+----------------------------------------------------------------------
+Pub/Sub Trigger
+----------------------------------------------------------------------
+
+The function is triggered by a pub/sub notification which occurs whenever a resource is created or updated in the staging FHIR store. This notification is a path to the resource:
+
+    "projects/[PROJECT]/locations/[LOCATION]/datasets/[DATASET]/fhirStores/[STAGING_FHIR_STORE]/fhir/[RESOURCE_TYPE]/[RESOURCE_ID]"
+ 
+
+----------------------------------------------------------------------
+Handling Matches
+----------------------------------------------------------------------
+
+The triggering resource is fetched from the staging FHIR store and, if it is a matchable type, is converted into an object of the corresponding name. The Appointment, Encounter, and Patient objects are all subclasses of Resource and override the Resource.search method with their corresponding match conditions. 
+
+After Resource.search is called, Resource.hasMatch checks if a match exists, and Resource.getMatchID returns its ID.
+
+    If a match exists, the ID of the new resource is updated to the ID of its match, it is moved to the final FHIR store via PUT request, and the fields of the existing resource are updated.
+
+    If no match exists, a new resource is created in the final FHIR store.
+
+
+----------------------------------------------------------------------
+CONFIG
+----------------------------------------------------------------------
+
+The config.properties file specifies the locations of the FHIR stores.
+
+
+----------------------------------------------------------------------
+ADDING NEW RESOURCES OR MATCHING CONDITIONS
+----------------------------------------------------------------------
+
+Appointment.java serves as a good template for development because it’s fairly simple
+
+    To add a new resource with matching requirements (i.e. if we want to match practitioners, or locations, etc), create a [resource_name].java class file that extends Resource. Then, update ReconcileFunction.reconcile to include the conversion from json to the new resource.
+
+    To update Matching Conditions, change GET request query within the [resource_name].search method.
+
+
+----------------------------------------------------------------------
+TESTING
+----------------------------------------------------------------------
+
+1. The function can be tested on GCP by POSTing a FHIR resource to the staging FHIR store.
+
+curl -X POST "https://healthcare.googleapis.com/v1/projects/[PROJECT]/locations/[LOCATION]/datasets/[DATASET]/fhirStores/[STAGING_FHIR_STORE]/fhir/[RESOURCE_TYPE]"
+    -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" 
+    -H "Content-Type: application/fhir+json; charset=utf-8" 
+    --data @[FILE_NAME].json 
+
+The url above will randomize the resource id, which is useful for match testing. If you want to specify the id, add /[RESOURCE_ID] to the end of the url.
+
+2. Unit tests are included
+
+3. In the future, we might want to look into having some locally running/mock database with FHIR store rules to test against.

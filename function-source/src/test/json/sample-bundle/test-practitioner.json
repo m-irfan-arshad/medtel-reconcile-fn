@@ -1,0 +1,26 @@
+{
+    "resourceType": "Practitioner",
+    "id": "bf0b9fec-b7f0-e253-7671-5fe1ae23dc02",
+    "identifier": [
+        {
+        "value": "SLATEJ01",
+        "system": "http://example.com/v2-to-fhir-converter/Identifier/KID",
+        "type": {
+            "coding": [
+            {
+                "code": "KID",
+                "display": "KID"
+            }
+            ]
+        }
+        }
+    ],
+    "name": [
+        {
+        "family": "SLATER",
+        "given": [
+            "JAMES"
+        ]
+        }
+    ]
+}
