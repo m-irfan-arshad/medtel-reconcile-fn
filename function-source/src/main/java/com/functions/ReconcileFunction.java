@@ -38,7 +38,7 @@ public class ReconcileFunction implements BackgroundFunction<PubSubMessage> {
 
   public void reconcile (String sourceFhirPath) {
     //fetch env variables from config
-    readConfig("reconcile.config");
+    readConfig("config.properties");
 
     //parse fhir path from PubSub
     String[] args = sourceFhirPath.split("/");
